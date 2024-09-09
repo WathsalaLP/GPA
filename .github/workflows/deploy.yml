@@ -23,6 +23,7 @@ jobs:
         GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
       run: |
         echo "$GOOGLE_CREDENTIALS_JSON" | base64 --decode > $HOME/gcloud-key.json
+        cat $HOME/gcloud-key.json  # Verify the JSON content
         gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
         gcloud config set project gpafinder
         gcloud auth configure-docker
