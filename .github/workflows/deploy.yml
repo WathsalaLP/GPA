@@ -20,10 +20,10 @@ jobs:
 
     - name: Decode and set up Google Cloud credentials
       env:
-        GOOGLE_CREDENTIALS_P12: ${{ secrets.GOOGLE_CREDENTIALS_P12 }}
+        GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
       run: |
-        echo "$GOOGLE_CREDENTIALS_P12" | base64 --decode > $HOME/gcloud-key.p12
-        gcloud auth activate-service-account --key-file=$HOME/gcloud-key.p12 --password-file=<(echo "notasecret")
+        echo "$GOOGLE_CREDENTIALS_JSON" | base64 --decode > $HOME/gcloud-key.json
+        gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
         gcloud config set project gpafinder
         gcloud auth configure-docker
 
