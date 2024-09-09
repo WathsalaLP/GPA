@@ -26,7 +26,7 @@ jobs:
         echo "$GOOGLE_CREDENTIALS" | gcloud auth activate-service-account --key-file=-
         gcloud config set project gpafinder
         gcloud auth configure-docker
-        echo "Password used: $PASSWORD"
+        echo "Password used: $notasecret"
 
     - name: Build Docker image
       run: |
