@@ -1,9 +1,9 @@
-name: CI/CD Pipeline
+name: Deploy Docker Image
 
 on:
   push:
     branches:
-      - main  # Adjust if you use a different default branch
+      - main
 
 jobs:
   build-and-deploy:
@@ -11,42 +11,25 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.12  # Set this to your Python version
+        python-version: '3.9'
 
-    - name: Install dependencies
+    - name: Authenticate with Google Cloud
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
       run: |
-        pip install -r requirements.txt
+        echo "$GOOGLE_CREDENTIALS" | gcloud auth activate-service-account --key-file=-
+        gcloud config set project gpafinder
+        gcloud auth configure-docker
 
-    - name: Run tests
+    - name: Build Docker image
       run: |
-        # Replace with your test command, e.g., pytest
-        pytest
+        docker build -t gcr.io/gpafinder/my-fastapi-app .
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Log in to Google Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: gcr.io
-        username: _json_key
-        password: ${{ secrets.GCP_SA_KEY }}  # Google Cloud Service Account key
-
-    - name: Build and push Docker image
+    - name: Push Docker image
       run: |
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-fastapi-app .
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-fastapi-app
-
-    - name: Deploy to Google Cloud Run
-      run: |
-        gcloud run deploy my-fastapi-app \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-fastapi-app \
-          --platform managed \
-          --region us-central1 \
-          --allow-unauthenticated \
-          --project ${{ secrets.GCP_PROJECT_ID }}
+        docker push gcr.io/gpafinder/my-fastapi-app
