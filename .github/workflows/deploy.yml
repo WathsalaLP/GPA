@@ -21,10 +21,13 @@ jobs:
     - name: Authenticate with Google Cloud
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        PASSWORD: ${{ secrets.PASSWORD }}
       run: |
         echo "$GOOGLE_CREDENTIALS" | gcloud auth activate-service-account --key-file=-
         gcloud config set project gpafinder
         gcloud auth configure-docker
+        # Example usage of the password in a script or command
+        echo "Password used: $PASSWORD"
 
     - name: Build Docker image
       run: |
