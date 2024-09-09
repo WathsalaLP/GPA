@@ -21,12 +21,11 @@ jobs:
     - name: Authenticate with Google Cloud
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        PASSWORD: ${{ secrets.MY_PASSWORD }}
       run: |
-        echo "$GOOGLE_CREDENTIALS" | gcloud auth activate-service-account --key-file=-
+        echo "$GOOGLE_CREDENTIALS" | base64 --decode > $HOME/gcloud-key.json
+        gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
         gcloud config set project gpafinder
         gcloud auth configure-docker
-        echo "Password used: $notasecret"
 
     - name: Build Docker image
       run: |
