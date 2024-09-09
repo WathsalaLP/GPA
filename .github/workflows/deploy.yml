@@ -22,19 +22,9 @@ jobs:
       env:
         GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
       run: |
-        # Decode and write the JSON key file
         echo "$GOOGLE_CREDENTIALS_JSON" | base64 --decode > $HOME/gcloud-key.json
-
-        # Debug: Verify the contents of the decoded file
-        cat $HOME/gcloud-key.json
-
-        # Authenticate with Google Cloud
         gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
-
-        # Set the Google Cloud project
         gcloud config set project gpafinder
-
-        # Configure Docker to use Google Cloud credentials
         gcloud auth configure-docker
 
     - name: Build Docker image
